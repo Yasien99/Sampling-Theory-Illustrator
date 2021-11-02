@@ -1,0 +1,12 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>img\home.png</file>
+    <file>img\start.png</file>
+    <file>img\upload.png</file>
+    <file>img\pause.png</file>
+    <file>img\zoom out.png</file>
+    <file>img\zoomin.png</file>
+    <file>img\up.png</file>
+
+  </qresource>
+</RCC>
