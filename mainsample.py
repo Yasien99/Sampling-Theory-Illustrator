@@ -1,5 +1,4 @@
 import sys
-import matplotlib
 import numpy as np
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import uic
@@ -18,8 +17,13 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi("sample.ui", self)
         self.Upload.clicked.connect(self.open)
         self.Plotdata.clicked.connect(self.plot)
-        self.graph1.setBackground('aliceblue')
-        self.graph2.setBackground('aliceblue')
+        self.graph1.setBackground('black')
+        self.graph2.setBackground('black')
+        self.SamplingPoints.clicked.connect(self.plotSamples)
+        self.ShowSampledGraph.clicked.connect(self.plotSeparateSamples)
+        self.clearSample.clicked.connect(self.clear)
+        self.show()
+        self.horizontalSlider.setMaximum(80)
 
     def open(self):
         path = QFileDialog.getOpenFileName(self, 'Open a file', '', 'All Files (*.*)')
@@ -34,16 +38,36 @@ class MainWindow(QtWidgets.QMainWindow):
         tmax = 1
         t = linspace(tmin, tmax, 900)
         x = cos(2 * pi * t) + cos(2 * pi * f * t)  # signal sampling
-        self.graph1.plot(t, x)
+        self.graph1.plot(t, x, pen='black')
 
+    def plotSamples(self):
+        self.graph1.clear()
         # sampling the signal with a sampling rate of 80 Hz
         # in this case, we are using the Nyquist rate.
-        T = 1 / 35
+        f = 40;  # Hz
+        tmin = -1
+        tmax = 1
+        T = 1 / self.horizontalSlider.value()
         nmin = ceil(tmin / T)
         nmax = floor(tmax / T)
         n = arange(nmin, nmax)
         x1 = cos(2 * pi * n * T) + cos(2 * pi * f * n * T)
-        self.graph1.plot(n * T, x1, pen='black')
+        self.graph1.plot(n * T, x1, symbol='o', pen='b')
+
+    def plotSeparateSamples(self):
+        self.graph2.clear()
+        f = 40;  # Hz
+        tmin = -1;
+        tmax = 1;
+        T = 1 / self.horizontalSlider.value();
+        nmin = ceil(tmin / T);
+        nmax = floor(tmax / T);
+        n = arange(nmin, nmax);
+        x1 = cos(2 * pi * n * T) + cos(2 * pi * f * n * T);
+        self.graph2.plot(n * T, x1, pen='b')
+    def clear(self):
+        self.splitter.setGeometry(QtCore.QRect(60, 10, 610, 1300))
+        self.splitter.setOrientation(QtCore.Qt.Vertical)
 
 
 app = QtWidgets.QApplication(sys.argv)
