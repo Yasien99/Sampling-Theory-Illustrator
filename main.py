@@ -4,6 +4,8 @@ import sys
 from PyQt5.uic.properties import QtCore
 from numpy import linspace, cos, sin, pi, ceil, floor, arange
 import numpy
+from pylab import plot, show, axis
+from pyqtgraph import PlotWidget, plot
 import pandas as pd
 from scipy import signal 
 SignalsCounter = -1
@@ -13,8 +15,8 @@ class Ui(QtWidgets.QMainWindow):
     def __init__(self):
         super(Ui, self).__init__()
         uic.loadUi('sample.ui', self)
-        self.setWindowIcon(QtGui.QIcon("appicon.png"))
         self.setWindowTitle("Sample illust")
+        self.setWindowIcon(QtGui.QIcon('appicon.png'))
         self.Upload.clicked.connect(self.open)
         self.Plotdata.clicked.connect(self.plot)
         self.SamplingPoints.clicked.connect(self.plotSamples)
@@ -23,8 +25,6 @@ class Ui(QtWidgets.QMainWindow):
         self.confirm.clicked.connect(self.composerSum)
         self.horizontalSlider.setMaximum(600)
         self.horizontalSlider.valueChanged.connect(self.plotSamples)
-        self.clearSample.clicked.connect(self.clear)
-        self.showSample.clicked.connect(self.showw)
         self.Remove.clicked.connect(self.remove)
         self.show()
 
@@ -33,8 +33,7 @@ class Ui(QtWidgets.QMainWindow):
         path = QFileDialog.getOpenFileName(self, 'Open a file', '', 'All Files (*.*)')
         if path != ('', ''):
             data = path[0]
-            print("File path: " + data)
-            
+            print("File path: " + data)          
 ##########################################################
         data1 = pd.read_csv(data)
         t = data1['# t']
@@ -43,14 +42,14 @@ class Ui(QtWidgets.QMainWindow):
         peak = numpy.argmax(spec)
         val = numpy.abs(peak) # Find magnitude
         print(val/6)
-        self.horizontalSlider.setMaximum((val/6)*3*6)
+        print("2Fmax at: "+str((val/6)*100))
+        self.horizontalSlider.setMaximum((val/6)*150)
+        self.label2.setText('2Fmax at : '+str((val/6)*100))
  ########################################################## 
     def plot(self):
         global data
         global data1
         data1 = pd.read_csv(data)
-       
-   
         self.graph1.clear()
         self.graph1.plot(data1['# t'], data1['x'] , pen='b')
         self.graph1.setBackground('black')
@@ -82,12 +81,7 @@ class Ui(QtWidgets.QMainWindow):
         tmax = 3;
         global time
         time = linspace(tmin, tmax, 900);
-        freq = int(self.FreqTextBox.text())
-  ########################################      
-       # SignalsFreq.append(freq)
-      #  print(SignalsFreq)
-       # self.horizontalSlider.setMaximum(3*6*5*max(SignalsFreq))
- ##########################################################       
+        freq = int(self.FreqTextBox.text())       
         amp = int(self.AmpTextBox.text())
         phase = int(self.PhaseTextBox.text())
         global signals_components
@@ -107,10 +101,6 @@ class Ui(QtWidgets.QMainWindow):
         global SignalsCounter
         self.ComboBox.removeItem(self.ComboBox.currentIndex())
         signals_components.pop(self.ComboBox.currentIndex())        
-    def showw(self):
-        self.splitter.setGeometry(0, 0, 850, 780)
-    def clear(self):
-        self.splitter.setGeometry(0,0,850,1560)
 
 app = 0
 app = QtWidgets.QApplication(sys.argv)
